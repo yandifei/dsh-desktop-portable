@@ -1,0 +1,14 @@
+dist/
+build/
+.tmp/
+*.log
+*.tmp
+*.zip
+*.7z
+*.sha256
+
+# Never commit local runtime data
+.dsh/
+home/
+@deepseek-ai/
+@deepseek-aidsh-desktop-updater/
