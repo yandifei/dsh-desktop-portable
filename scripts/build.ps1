@@ -142,7 +142,7 @@ try {
 
     Write-Step 'Assembling the portable package'
     Copy-Item (Join-Path $repoRoot 'README.md') $payload -Force
-    Copy-Item (Join-Path $repoRoot 'README.zh-CN.md') $payload -Force
+    Copy-Item (Join-Path $repoRoot 'README.en.md') $payload -Force
     Copy-Item (Join-Path $repoRoot 'CHANGELOG.md') $payload -Force
     Copy-Item (Join-Path $repoRoot 'LICENSE') $payload -Force
     Copy-Item (Join-Path $repoRoot 'THIRD_PARTY_NOTICES.md') $payload -Force

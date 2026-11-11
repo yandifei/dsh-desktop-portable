@@ -1,102 +1,85 @@
-# DSH Desktop Portable (Windows)
+# DSH Desktop Portable（Windows 中文说明）
 
-**English** | [中文](README.zh-CN.md)
+中文 | [English](README.en.md)
 
 [![build-portable](https://github.com/yandifei/dsh-desktop-portable/actions/workflows/build.yml/badge.svg)](https://github.com/yandifei/dsh-desktop-portable/actions/workflows/build.yml)
 [![upstream-check](https://github.com/yandifei/dsh-desktop-portable/actions/workflows/upstream-check.yml/badge.svg)](https://github.com/yandifei/dsh-desktop-portable/actions/workflows/upstream-check.yml)
 
-Unofficial portable build of [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) for **Windows x64**.
-It keeps the official Electron desktop application, but moves every writable path next to the executable, so the
-whole folder can live on a USB drive and be used on another Windows PC without installing anything.
+这是 **DeepSeek Harness 官方 Windows 桌面端的非官方便携化版本**。程序本体与官方安装包一致，只修改了
+`resources/app.asar`，让所有可写数据都落在 exe 同级目录，整个文件夹可以放在 U 盘里，换一台 Windows 电脑
+直接双击运行。
 
-> **This is not an official DeepSeek project.** It is not affiliated with, endorsed by, or supported by
-> Hangzhou DeepSeek Artificial Intelligence Co., Ltd. "DeepSeek" and "DeepSeek Harness" are trademarks of their
-> owner and are used here only to describe the upstream software.
+> 本项目与 DeepSeek 官方无关，未获得官方背书或支持。"DeepSeek / DeepSeek Harness" 是其权利人的商标，
+> 此处仅用于说明上游软件。
 
-## Features
+## 特性
 
-- Official Electron desktop UI and official runtime packages (same app as the official installer).
-- No installation, **no registry writes**, no PATH changes, no Start-menu entries.
-- `DSH_HOME` is `<exe dir>\.dsh` (native name), Electron `userData` is `<exe dir>\@deepseek-ai\dsh-desktop`.
-- Plugin packages, pnpm store/cache, pnpm state, plugin temp files and the first-use workspace all stay on the drive.
-- The Host process resolves the user home to `<exe dir>\home`, so plugins that write to `~` stay portable.
-- Built-in portable updater: downloads the official installer, verifies SHA-512 and Authenticode, extracts it
-  **without running it**, re-applies the portable patches, and replaces program files while keeping data.
-- Windows x64 only.
+- 保留官方 Electron 桌面体验与官方运行时包。
+- 不安装、**不写注册表**、不改 PATH、不建开始菜单。
+- `DSH_HOME` = `<exe 同级>\.dsh`；Electron 用户数据 = `<exe 同级>\@deepseek-ai\dsh-desktop`。
+- 插件包、pnpm store/cache、pnpm 状态、临时文件、首次工作区全部留在 U 盘。
+- Host 进程的用户目录重定向到 `<exe 同级>\home`，插件写到 `~` 的数据也不会落到系统盘。
+- 内置便携更新器：下载官方安装包 → 校验 SHA-512 与数字签名 → 解包（不运行安装器）→ 重新打补丁 → 覆盖程序，
+  数据目录保留。
+- 仅支持 Windows x64。
 
-## Requirements
+## 环境要求
 
-- Windows 10/11 x64.
-- NTFS-formatted USB drive (exFAT works for normal use but does not support hard links/symlinks used by pnpm).
-- WinRAR or 7-Zip installed when you use the updater (the updater extracts the official installer).
+- Windows 10/11 x64。
+- NTFS 格式 U 盘（exFAT 可用于日常使用，但 pnpm 的硬链接/符号链接可能受限）。
+- 使用更新器时需要安装 WinRAR 或 7-Zip。
 
-## Quick start
+## 快速开始
 
-1. Download the latest release zip and extract it to the root of the USB drive (short path recommended).
-2. Double-click `DeepSeek Harness.exe`.
-3. Sign in or add an API key on the welcome page.
-4. Quit from the tray, wait for the process to exit, then eject the drive safely.
+1. 下载 Release 里的 zip，解压到 U 盘根目录（路径尽量短）。
+2. 双击 `DeepSeek Harness.exe`。
+3. 在欢迎页登录账号或填写 API Key。
+4. 退出请用托盘 → Quit，等进程完全退出后再安全弹出 U 盘。
 
-No launcher script or environment variable is required.
+不需要启动脚本，也不需要设置环境变量。
 
-## What is modified
+## 数据位置
 
-Only `resources/app.asar` is patched (JavaScript). The Electron binaries remain the official signed files.
-See [docs/how-it-works.md](docs/how-it-works.md) for the exact patch list.
-
-## Data layout
-
-| Path | Content |
+| 路径 | 内容 |
 | --- | --- |
-| `.dsh\` | DSH_HOME: sessions, attachments, settings, credentials, plugins, runtime payload |
-| `.dsh\profiles\desktop\node_modules` | installed plugins |
-| `.dsh\cache\pnpm-store`, `.dsh\cache\pnpm-cache` | plugin download store and metadata cache |
-| `.dsh\plugin-data\` | plugin-specific data (e.g. wallpaper engine) |
-| `home\` | Host user home: `.agents`, `.bili-ai`, `.npmrc`, `AppData\Local` (pnpm state) |
-| `@deepseek-ai\dsh-desktop\` | Electron cookies, local storage, shortcuts, caches |
-| `@deepseek-aidsh-desktop-updater\` | updater download/temp/cache |
+| `.dsh\` | DSH_HOME：会话、附件、设置、凭据、插件、运行时 |
+| `.dsh\profiles\desktop\node_modules` | 已安装插件 |
+| `.dsh\cache\pnpm-store`、`pnpm-cache` | 插件下载库与元数据缓存 |
+| `.dsh\plugin-data\` | 插件自定义数据 |
+| `home\` | Host 用户目录：`.agents`、`.bili-ai`、`.npmrc`、`AppData\Local` |
+| `@deepseek-ai\dsh-desktop\` | Electron Cookie、LocalStorage、快捷键、缓存 |
+| `@deepseek-aidsh-desktop-updater\` | 更新下载、临时文件、插件缓存 |
 
-## Updates
+## 更新
 
-Run `Update-Harness.cmd`. It reads the official feed, downloads the installer to
-`@deepseek-aidsh-desktop-updater\download`, verifies it, extracts it, re-applies the patches, and restarts the app.
-Data directories are preserved. If a patch anchor no longer matches a new upstream version, the updater aborts and
-leaves the current version untouched.
+双击 `Update-Harness.cmd`。它会从官方 feed 下载安装包到 `@deepseek-aidsh-desktop-updater\download`，校验后解包、
+重新打补丁并覆盖程序文件；`.dsh`、`home` 等数据目录不会被动。
 
-## Build it yourself
+如果上游代码结构变化导致补丁失败，更新器会中止并保留当前版本。
+
+## 自己构建
 
 ```powershell
 pwsh scripts/build.ps1 -Version latest
 ```
 
-The script downloads the official installer from `download.deepseek.com`, verifies its signature and checksum,
-extracts it, patches the asar, and writes a zip plus SHA-256 file under `dist/`. See [docs/build.md](docs/build.md).
+输出在 `dist/`，包含 zip 和 `.sha256`。详见 [docs/build.md](docs/build.md)。
 
-## Security notes
+## 安全提示
 
-- Release assets are built from the official signed installer; the build script verifies the installer's
-  SHA-512 and Authenticode signature before extracting it.
-- Always compare the SHA-256 published with a release.
-- Do **not** sign in with a real account using a build from an untrusted source.
-- The official auto-updater is disabled on purpose; the portable updater is the only update path.
+- 每个 Release 附带 SHA-256，请核对。
+- 构建脚本只从官方安装包解包；校验 SHA-512 与 Authenticode 签名。
+- 不要用来源不明的预构建包登录真实账号。
+- 官方自动更新已禁用，更新只走包内更新器。
 
-## Limitations
+## 已知限制
 
-- Windows x64 only. macOS/Linux are not supported by this repository.
-- Modifying `app.asar` means the application is no longer byte-identical to the official payload; upstream support
-  does not cover it.
-- The first-use workspace is stored under `.dsh\workspace`. Workspace paths are absolute, so a drive-letter change
-  requires selecting the workspace again (session data itself is preserved).
-- Upstream releases may change JavaScript anchors; builds then fail safely until the patch script is updated.
+- 仅 Windows x64；macOS/Linux 不支持。
+- 修改过 `app.asar`，与官方 payload 不再逐字节一致，官方不支持此用法。
+- 工作区路径是绝对路径，换盘符后需要重新选择工作区（会话数据仍在 `.dsh`）。
+- 上游 JS 结构变化可能导致补丁失败，需要更新 `scripts/patch-asar.js` 的锚点。
 
-## 中文说明
+## 许可证
 
-这是 **DeepSeek Harness 官方 Windows 桌面端的非官方便携化补丁**：只修改 `app.asar`，不安装、不写注册表，
-`DSH_HOME`、浏览器数据、插件、pnpm 缓存、临时文件和默认工作区全部落在 exe 同级目录，可整个文件夹拷到
-NTFS U 盘使用。更新用 `Update-Harness.cmd`（需要 WinRAR 或 7-Zip）。本项目与 DeepSeek 官方无关。
-
-## License
-
-The scripts and documentation in this repository are MIT licensed (see `LICENSE`).
-The bundled DeepSeek Harness payload and third-party components keep their own licenses; see
-`THIRD_PARTY_NOTICES.md` and the license files shipped with the release.
+仓库内脚本与文档为 MIT（见 `LICENSE`）；官方 payload 与第三方组件遵循各自许可证（见
+`THIRD_PARTY_NOTICES.md`）。
