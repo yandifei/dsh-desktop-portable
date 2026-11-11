@@ -2,6 +2,9 @@
 
 **English** | [中文](README.zh-CN.md)
 
+[![build-portable](https://github.com/yandifei/dsh-desktop-portable/actions/workflows/build.yml/badge.svg)](https://github.com/yandifei/dsh-desktop-portable/actions/workflows/build.yml)
+[![upstream-check](https://github.com/yandifei/dsh-desktop-portable/actions/workflows/upstream-check.yml/badge.svg)](https://github.com/yandifei/dsh-desktop-portable/actions/workflows/upstream-check.yml)
+
 Unofficial portable build of [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) for **Windows x64**.
 It keeps the official Electron desktop application, but moves every writable path next to the executable, so the
 whole folder can live on a USB drive and be used on another Windows PC without installing anything.

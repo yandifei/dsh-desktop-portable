@@ -17,3 +17,7 @@ Initial public release.
 - Portable updater (`Update-Harness.ps1`) that downloads the official installer, verifies SHA-512 and
   Authenticode, extracts it without running it, re-applies the patches and keeps user data.
 - GitHub Actions workflow for tag-based releases and a scheduled upstream compatibility check.
+- Extraction handles the nested `$PLUGINSDIR/app-64.7z` payload, so machines with only 7-Zip work in both the
+  build script and the updater.
+- `Verify-Release.ps1` (checksum, required files, personal-data check), Chinese README, contribution guide,
+  issue/PR templates and troubleshooting docs.

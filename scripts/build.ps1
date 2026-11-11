@@ -142,11 +142,14 @@ try {
 
     Write-Step 'Assembling the portable package'
     Copy-Item (Join-Path $repoRoot 'README.md') $payload -Force
+    Copy-Item (Join-Path $repoRoot 'README.zh-CN.md') $payload -Force
+    Copy-Item (Join-Path $repoRoot 'CHANGELOG.md') $payload -Force
     Copy-Item (Join-Path $repoRoot 'LICENSE') $payload -Force
     Copy-Item (Join-Path $repoRoot 'THIRD_PARTY_NOTICES.md') $payload -Force
     Copy-Item (Join-Path $repoRoot 'SECURITY.md') $payload -Force
     Copy-Item (Join-Path $repoRoot 'docs') $payload -Recurse -Force
     Copy-Item (Join-Path $repoRoot 'scripts\patch-asar.js') (Join-Path $payload 'Patch-Asar.js') -Force
+    Copy-Item (Join-Path $repoRoot 'scripts\verify-release.ps1') (Join-Path $payload 'Verify-Release.ps1') -Force
     Copy-Item (Join-Path $repoRoot 'portable\Update-Harness.ps1') $payload -Force
     Copy-Item (Join-Path $repoRoot 'portable\Update-Harness.cmd') $payload -Force
 

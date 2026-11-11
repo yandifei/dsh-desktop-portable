@@ -2,6 +2,9 @@
 
 [English](README.md) | 中文
 
+[![build-portable](https://github.com/yandifei/dsh-desktop-portable/actions/workflows/build.yml/badge.svg)](https://github.com/yandifei/dsh-desktop-portable/actions/workflows/build.yml)
+[![upstream-check](https://github.com/yandifei/dsh-desktop-portable/actions/workflows/upstream-check.yml/badge.svg)](https://github.com/yandifei/dsh-desktop-portable/actions/workflows/upstream-check.yml)
+
 这是 **DeepSeek Harness 官方 Windows 桌面端的非官方便携化版本**。程序本体与官方安装包一致，只修改了
 `resources/app.asar`，让所有可写数据都落在 exe 同级目录，整个文件夹可以放在 U 盘里，换一台 Windows 电脑
 直接双击运行。
