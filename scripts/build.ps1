@@ -46,6 +46,29 @@ function Find-Extractor {
     throw '7-Zip or WinRAR is required to extract the official installer.'
 }
 
+function Expand-InstallerPayload([string]$extractor, [string]$installer, [string]$destination) {
+    if ($extractor -like '*WinRAR*') {
+        & $extractor x -y -ibck $installer ($destination + '\') | Out-Null
+    } else {
+        & $extractor x -y $installer ('-o' + $destination) | Out-Null
+    }
+    Start-Sleep -Seconds 2
+    if (Test-Path (Join-Path $destination 'DeepSeek Harness.exe')) { return }
+
+    # electron-builder NSIS stores the real payload in $PLUGINSDIR/app-64.7z.
+    # WinRAR usually expands it directly; 7-Zip needs a second pass.
+    $nested = Get-ChildItem $destination -Recurse -Force -Filter 'app-*.7z' -ErrorAction SilentlyContinue |
+        Select-Object -First 1
+    if ($null -eq $nested) { return }
+    Write-Host ('Extracting nested payload: ' + $nested.Name)
+    if ($extractor -like '*WinRAR*') {
+        & $extractor x -y -ibck $nested.FullName ($destination + '\') | Out-Null
+    } else {
+        & $extractor x -y $nested.FullName ('-o' + $destination) | Out-Null
+    }
+    Start-Sleep -Seconds 2
+}
+
 function Get-Feed([string]$url) {
     $response = Invoke-WebRequest -Uri $url -UseBasicParsing -TimeoutSec 60
     $text = if ($response.Content -is [byte[]]) { [Text.Encoding]::UTF8.GetString($response.Content) } else { [string]$response.Content }
@@ -97,12 +120,7 @@ try {
     $extractor = Find-Extractor
     $payload = Join-Path $tempRoot 'payload'
     New-Item -ItemType Directory -Force -Path $payload | Out-Null
-    if ($extractor -like '*WinRAR*') {
-        & $extractor x -y -ibck $installer ($payload + '\') | Out-Null
-    } else {
-        & $extractor x -y $installer ('-o' + $payload) | Out-Null
-    }
-    Start-Sleep -Seconds 2
+    Expand-InstallerPayload $extractor $installer $payload
     if (-not (Test-Path (Join-Path $payload 'DeepSeek Harness.exe'))) { throw 'Extraction failed: executable not found.' }
 
     Write-Step 'Applying portable patches'

@@ -17,6 +17,26 @@ function Pause-Exit([int]$code) {
     exit $code
 }
 
+function Expand-InstallerPayload([string]$extractor, [string]$installer, [string]$destination) {
+    if ($extractor -like '*WinRAR*') {
+        & $extractor x -y -ibck $installer ($destination + '\') | Out-Null
+    } else {
+        & $extractor x -y $installer ('-o' + $destination) | Out-Null
+    }
+    Start-Sleep -Seconds 2
+    if (Test-Path (Join-Path $destination 'DeepSeek Harness.exe')) { return }
+    $nested = Get-ChildItem $destination -Recurse -Force -Filter 'app-*.7z' -ErrorAction SilentlyContinue |
+        Select-Object -First 1
+    if ($null -eq $nested) { return }
+    Write-Host ('Extracting nested payload: ' + $nested.Name)
+    if ($extractor -like '*WinRAR*') {
+        & $extractor x -y -ibck $nested.FullName ($destination + '\') | Out-Null
+    } else {
+        & $extractor x -y $nested.FullName ('-o' + $destination) | Out-Null
+    }
+    Start-Sleep -Seconds 2
+}
+
 function Find-Extractor {
     $onPath = Get-Command '7z.exe', 'WinRAR.exe' -ErrorAction SilentlyContinue | Select-Object -First 1
     if ($onPath) { return $onPath.Source }
@@ -90,12 +110,7 @@ try {
     New-Item -ItemType Directory -Force -Path $staging | Out-Null
 
     Write-Host 'Extracting the official installer (no installation, no registry writes)...'
-    if ($extractor -like '*WinRAR*') {
-        & $extractor x -y -ibck $setup ($staging + '\') | Out-Null
-    } else {
-        & $extractor x -y $setup ('-o' + $staging) | Out-Null
-    }
-    Start-Sleep -Seconds 3
+    Expand-InstallerPayload $extractor $setup $staging
     if (-not (Test-Path (Join-Path $staging 'DeepSeek Harness.exe'))) { throw 'Extraction failed: executable not found.' }
 
     Write-Host 'Re-applying portable patches...'
