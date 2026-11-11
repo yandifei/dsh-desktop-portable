@@ -12,6 +12,7 @@ param(
     [string]$Version = 'latest',
     [string]$OutputDir = (Join-Path $PSScriptRoot '..\dist'),
     [string]$Extractor = '',
+    [switch]$NoArchive,
     [switch]$KeepTemp
 )
 
@@ -115,6 +116,11 @@ try {
     if (Test-Path $updateYml) { Rename-Item $updateYml 'app-update.yml.disabled' -Force }
     $staleBackup = Join-Path $payload 'resources\app.asar.orig'
     if (Test-Path $staleBackup) { Remove-Item $staleBackup -Force }
+
+    if ($NoArchive) {
+        Write-Step 'Check-only build: patches applied successfully; skipping archive'
+        return
+    }
 
     Write-Step 'Assembling the portable package'
     Copy-Item (Join-Path $repoRoot 'README.md') $payload -Force

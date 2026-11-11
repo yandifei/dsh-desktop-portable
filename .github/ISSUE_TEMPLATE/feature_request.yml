@@ -1,0 +1,46 @@
+name: Feature request
+description: Suggest an improvement to the portable package or the build tooling
+title: "[feature] "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Keep in mind the project's scope: Windows x64 only, patching `resources/app.asar` only, minimal surface area.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What is missing or inconvenient today?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposal
+      description: What should change, and where in the package or scripts?
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Portability / data layout
+        - Updates
+        - Build tooling
+        - Documentation
+        - Other
+    validations:
+      required: true
+  - type: checkboxes
+    id: confirmations
+    attributes:
+      label: Confirmations
+      options:
+        - label: This request stays within Windows x64 and the app.asar-only scope.
+          required: true

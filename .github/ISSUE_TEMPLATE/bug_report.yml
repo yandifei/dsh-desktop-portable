@@ -1,0 +1,74 @@
+name: Bug report
+description: Something in the portable package or the build tooling does not work
+title: "[bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the report. This is an unofficial project; please do not include credentials, cookies, API keys,
+        session contents or personal paths in the issue.
+  - type: input
+    id: version
+    attributes:
+      label: Portable package version
+      description: Shown in the release tag or `resources\runtime\primary-runtime\runtime.json`.
+      placeholder: "0.2.2-rc.1"
+    validations:
+      required: true
+  - type: input
+    id: windows
+    attributes:
+      label: Windows version and architecture
+      placeholder: "Windows 11 23H2 x64"
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Starting the app
+        - Data paths / portability
+        - Updates
+        - Build script
+        - Documentation
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. ...
+        2. ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected result
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual result
+      description: Logs are welcome, but remove credentials, cookies and personal paths first.
+    validations:
+      required: true
+  - type: input
+    id: checksum
+    attributes:
+      label: Release SHA-256 (if a release asset was used)
+      placeholder: "881c33b6..."
+  - type: checkboxes
+    id: confirmations
+    attributes:
+      label: Confirmations
+      options:
+        - label: I did not include credentials, cookies or personal data in this report.
+          required: true
+        - label: I understand this project is not affiliated with DeepSeek.
+          required: true

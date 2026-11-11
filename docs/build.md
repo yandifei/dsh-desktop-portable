@@ -25,6 +25,12 @@ Steps performed by the script:
 
 Output: `dist/DSH-Desktop-Portable-<version>-win-x64.zip` and the matching `.sha256`.
 
+To validate that the patch anchors still match a new upstream payload without producing the archive:
+
+```powershell
+pwsh scripts/build.ps1 -Version latest -NoArchive
+```
+
 ## Pinning a version
 
 ```powershell

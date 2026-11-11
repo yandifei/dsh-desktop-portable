@@ -1,5 +1,7 @@
 # DSH Desktop Portable (Windows)
 
+**English** | [中文](README.zh-CN.md)
+
 Unofficial portable build of [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) for **Windows x64**.
 It keeps the official Electron desktop application, but moves every writable path next to the executable, so the
 whole folder can live on a USB drive and be used on another Windows PC without installing anything.

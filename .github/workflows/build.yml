@@ -2,6 +2,11 @@ name: build-portable
 
 on:
   workflow_dispatch:
+    inputs:
+      version:
+        description: 'Upstream version to build, or "latest"'
+        required: false
+        default: latest
   push:
     tags:
       - 'v*'
@@ -9,16 +14,22 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: build-portable-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   windows:
     runs-on: windows-latest
+    env:
+      BUILD_VERSION: ${{ github.event.inputs.version || 'latest' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
       - name: Build portable package
         shell: pwsh
-        run: ./scripts/build.ps1 -Version latest
+        run: ./scripts/build.ps1 -Version $env:BUILD_VERSION
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
