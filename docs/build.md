@@ -31,6 +31,12 @@ To validate that the patch anchors still match a new upstream payload without pr
 pwsh scripts/build.ps1 -Version latest -NoArchive
 ```
 
+To verify a finished archive (checksum, required files, absence of personal data):
+
+```powershell
+pwsh scripts/verify-release.ps1 -Zip dist\DSH-Desktop-Portable-<version>-win-x64.zip
+```
+
 ## Pinning a version
 
 ```powershell
