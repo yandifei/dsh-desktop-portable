@@ -1,8 +1,8 @@
 blank_issues_enabled: false
 contact_links:
-  - name: Security report
+  - name: 安全问题
     url: https://github.com/yandifei/dsh-desktop-portable/security/advisories/new
-    about: Please report security issues privately instead of opening a public issue.
-  - name: Upstream DeepSeek Harness
+    about: 请私下报告安全问题，不要开公开 issue。
+  - name: 上游 DeepSeek Harness
     url: https://github.com/deepseek-ai/deepseek-harness
-    about: For issues with DeepSeek Harness itself (not this portable wrapper), use the upstream project.
+    about: DeepSeek Harness 本身的问题请找上游，这里只负责便携封装。

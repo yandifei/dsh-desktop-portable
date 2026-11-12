@@ -1,45 +1,44 @@
-name: Bug report
-description: Something in the portable package or the build tooling does not work
+name: Bug 反馈
+description: 便携包或构建工具有问题
 title: "[bug] "
 labels: ["bug"]
 body:
   - type: markdown
     attributes:
       value: |
-        Thanks for the report. This is an unofficial project; please do not include credentials, cookies, API keys,
-        session contents or personal paths in the issue.
+        感谢反馈。本项目是非官方项目，请在 issue 里**不要**附带凭据、Cookie、API Key、会话内容或个人路径。
   - type: input
     id: version
     attributes:
-      label: Portable package version
-      description: Shown in the release tag or `resources\runtime\primary-runtime\runtime.json`.
-      placeholder: "0.2.2-rc.1"
+      label: 便携包版本
+      description: 见 Release 标签或 `resources\runtime\primary-runtime\runtime.json`。
+      placeholder: "0.2.2-rc.2"
     validations:
       required: true
   - type: input
     id: windows
     attributes:
-      label: Windows version and architecture
+      label: Windows 版本与架构
       placeholder: "Windows 11 23H2 x64"
     validations:
       required: true
   - type: dropdown
     id: area
     attributes:
-      label: Area
+      label: 问题范围
       options:
-        - Starting the app
-        - Data paths / portability
-        - Updates
-        - Build script
-        - Documentation
-        - Other
+        - 启动应用
+        - 数据路径 / 便携性
+        - 更新
+        - 构建脚本
+        - 文档
+        - 其它
     validations:
       required: true
   - type: textarea
     id: steps
     attributes:
-      label: Steps to reproduce
+      label: 复现步骤
       placeholder: |
         1. ...
         2. ...
@@ -48,27 +47,27 @@ body:
   - type: textarea
     id: expected
     attributes:
-      label: Expected result
+      label: 期望结果
     validations:
       required: true
   - type: textarea
     id: actual
     attributes:
-      label: Actual result
-      description: Logs are welcome, but remove credentials, cookies and personal paths first.
+      label: 实际结果
+      description: 欢迎附日志，但请先删除凭据、Cookie 与个人路径。
     validations:
       required: true
   - type: input
     id: checksum
     attributes:
-      label: Release SHA-256 (if a release asset was used)
+      label: 所用 Release 的 SHA-256（如果来自 Release 资产）
       placeholder: "881c33b6..."
   - type: checkboxes
     id: confirmations
     attributes:
-      label: Confirmations
+      label: 确认事项
       options:
-        - label: I did not include credentials, cookies or personal data in this report.
+        - label: 我没有在本报告中附带凭据、Cookie 或个人数据。
           required: true
-        - label: I understand this project is not affiliated with DeepSeek.
+        - label: 我了解本项目与 DeepSeek 官方无关。
           required: true

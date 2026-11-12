@@ -1,46 +1,44 @@
-# How the portable build works
+# 便携化是怎么实现的
 
-This project keeps the **official** DeepSeek Harness Electron desktop payload and patches only
-`resources/app.asar`. `app.asar` is an unencrypted archive (header JSON + concatenated files), so the
-patch script rewrites it in place:
+本项目保留**官方**的 DeepSeek Harness Electron 桌面 payload，只补丁 `resources/app.asar`。
+`app.asar` 是未加密归档（JSON 头 + 拼接的文件），所以补丁脚本可以原位重写：
 
-- packed files are copied in order with fresh offsets and fresh SHA-256 integrity blocks;
-- files marked `unpacked` stay in `resources/app.asar.unpacked` and are referenced as before;
-- only `lib/main.js` and two workspace-controller modules are changed.
+- 打包文件按原顺序复制，重新计算偏移与 SHA-256 完整性块；
+- 标记为 `unpacked` 的文件仍留在 `resources/app.asar.unpacked`，引用方式不变；
+- 只改 `lib/main.js` 和两个 workspace-controller 模块。
 
-The `.exe` and DLLs remain the official signed binaries. The Windows Authenticode signature covers the
-executable, not `app.asar`, so the app still starts normally — but the UI code is modified, and the
-project is therefore unofficial.
+`.exe` 与 DLL 仍是官方签名的二进制。Windows 的 Authenticode 签名覆盖可执行文件而不是 `app.asar`，
+所以应用仍能正常启动——也正因 UI 代码被改过，本项目是非官方的。
 
-## Patches
+## 补丁
 
-### 1. Portable root and data paths (`lib/main.js`)
+### 1. 便携根目录与数据路径（`lib/main.js`）
 
-At module load, the app derives a root from `dirname(process.execPath)` and:
+模块加载时，应用从 `dirname(process.execPath)` 推出根目录，然后：
 
-| Setting | Portable value |
+| 设置 | 便携值 |
 | --- | --- |
 | `DSH_HOME` | `<root>\.dsh` |
-| `TEMP`, `TMP` | `<root>\@deepseek-aidsh-desktop-updater\temp` |
+| `TEMP`、`TMP` | `<root>\@deepseek-aidsh-desktop-updater\temp` |
 | `DSH_WE_DATA_DIR` | `<root>\.dsh\plugin-data\wallpaper-engine` |
 | `DSH_WE_CACHE_DIR` | `<root>\@deepseek-aidsh-desktop-updater\wallpaper-engine-cache` |
 | Electron `userData` / `sessionData` | `<root>\@deepseek-ai\dsh-desktop` |
 | `defaultDshHome()` | `<root>\.dsh` |
 
-`DSH_*` values use `??=` so an explicit environment override still wins.
+`DSH_*` 的值用 `??=` 赋值，显式设置的环境变量仍然优先。
 
-### 2. Host process home (`desktopNodeEnvironment` call)
+### 2. Host 进程的用户目录（`desktopNodeEnvironment` 调用）
 
-The Host (and therefore every plugin and agent subprocess) receives:
+Host（以及它派生的所有插件、agent 子进程）会收到：
 
-- `USERPROFILE` = `<root>\home`, so `os.homedir()` and `~` resolve to the drive;
-- `LOCALAPPDATA` = `<root>\home\AppData\Local`, so pnpm state and similar caches stay portable;
-- `HOME` = the real user profile, so git/ssh configs keep working.
+- `USERPROFILE` = `<root>\home`，于是 `os.homedir()` 和 `~` 都落在盘上；
+- `LOCALAPPDATA` = `<root>\home\AppData\Local`，pnpm 状态之类的缓存留在盘上；
+- `HOME` = 真实用户目录，保证 git/ssh 配置照常可用。
 
-### 3. First-use workspace
+### 3. 首次工作区
 
-`@deepseek-ai/dsh-api-workspace-controller` contains two copies of the same logic
-(`lib/index.js` inlined and `lib/types/default-directory.js` re-exported). Both are changed to:
+`@deepseek-ai/dsh-api-workspace-controller` 里有两份相同逻辑（`lib/index.js` 内联一份，
+`lib/types/default-directory.js` 转出另一份）。两处都改成：
 
 ```js
 if (documentsDirectory === undefined) {
@@ -49,38 +47,36 @@ if (documentsDirectory === undefined) {
 }
 ```
 
-The default workspace is therefore created under `.dsh\workspace` instead of `Documents`.
+默认工作区因此创建在 `.dsh\workspace` 下，而不是「文档」。
 
-### 4. Protocol registration
+### 4. 协议注册
 
-`app.setAsDefaultProtocolClient('dsh')` becomes opt-in:
+`app.setAsDefaultProtocolClient('dsh')` 改为按需启用：
 
 ```js
 if (process.env.DSH_DESKTOP_REGISTER_PROTOCOL === '1') app.setAsDefaultProtocolClient('dsh');
 ```
 
-Startup writes no registry keys by default. The trade-off: `dsh://open` deep links no longer focus the app.
+启动默认不写注册表。代价是 `dsh://open` 深链不再唤起应用。
 
-### 5. Updates
+### 5. 更新
 
-The official updater is enabled only when `resources/app-update.yml` exists, so the build script renames it
-to `app-update.yml.disabled`. The bundled `Update-Harness.ps1` replaces it with a portable flow that extracts
-the official installer instead of running it.
+官方更新器只在 `resources/app-update.yml` 存在时才启用，所以构建脚本把它改名为 `app-update.yml.disabled`。
+包内的 `Update-Harness.ps1` 用便携流程替代：解包官方安装包，而不是运行它。
 
-## Data layout
+## 数据布局
 
-| Path | Content |
+| 路径 | 内容 |
 | --- | --- |
-| `.dsh\` | DSH_HOME: sessions, settings, credentials, plugins, runtime payload |
-| `.dsh\profiles\desktop\node_modules` | plugins installed by the plugin manager |
-| `.dsh\cache\pnpm-store`, `.dsh\cache\pnpm-cache` | pnpm store and metadata cache (configured relatively in the profile) |
-| `.dsh\plugin-data\` | plugin data (wallpaper engine and similar) |
-| `home\` | Host user home: `.agents`, `.bili-ai`, `.npmrc`, `AppData\Local` |
-| `@deepseek-ai\dsh-desktop\` | Electron cookies/local storage/shortcuts/caches |
-| `@deepseek-aidsh-desktop-updater\` | updater downloads, temp, wallpaper cache |
+| `.dsh\` | DSH_HOME：会话、设置、凭据、插件、运行时 |
+| `.dsh\profiles\desktop\node_modules` | 插件管理安装的插件 |
+| `.dsh\cache\pnpm-store`、`.dsh\cache\pnpm-cache` | pnpm 下载库与元数据缓存（在 profile 里按相对路径配置） |
+| `.dsh\plugin-data\` | 插件数据（壁纸引擎等） |
+| `home\` | Host 用户目录：`.agents`、`.bili-ai`、`.npmrc`、`AppData\Local` |
+| `@deepseek-ai\dsh-desktop\` | Electron Cookie、LocalStorage、快捷键、缓存 |
+| `@deepseek-aidsh-desktop-updater\` | 更新下载、暂存、临时文件、壁纸缓存 |
 
-## Failure behaviour
+## 失败行为
 
-Each patch anchor is asserted. If an upstream release changes the surrounding code, `Patch-Asar.js` exits with
-code 2 before touching the payload. The build script then aborts; the updater also aborts and leaves the current
-installation untouched.
+每个补丁锚点都有断言。上游发版改了周边代码时，`Patch-Asar.js` 会在动 payload 之前以退出码 2 结束。
+构建脚本随后中止；更新器同理，当前安装保持不动。

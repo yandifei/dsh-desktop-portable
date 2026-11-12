@@ -1,39 +1,38 @@
-# Troubleshooting
+# 故障排查
 
-## The app does not start
+## 应用起不来
 
-- Check Windows is x64 and the drive is NTFS.
-- Make sure the folder path is short and contains no exotic characters.
-- Look at `@deepseek-ai\dsh-desktop\logs` and the Windows Event Viewer.
-- Antivirus may quarantine a modified `app.asar`; add an exclusion only if you trust the build.
+- 确认是 x64 Windows，U 盘是 NTFS。
+- 路径尽量短，不要带奇怪字符。
+- 看 `@deepseek-ai\dsh-desktop\logs` 和 Windows 事件查看器。
+- 杀毒软件可能隔离被修改过的 `app.asar`；只有在你信任这个构建时才加白名单。
 
-## The app starts but data appears on the system drive
+## 应用能起，但数据跑到了系统盘
 
-- The portable paths are derived from `process.execPath`. Do not copy only the `.exe`; copy the whole folder.
-- Existing data under `C:\Users\<user>\.dsh` is not used by the portable build; that is expected.
-- Third-party plugins that hardcode `%APPDATA%` or absolute paths can still write outside the package.
+- 便携路径由 `process.execPath` 推导。不要只拷 exe，整个文件夹一起拷。
+- `C:\Users\<用户>\.dsh` 下的旧数据不会被便携版使用，这是预期行为。
+- 硬编码 `%APPDATA%` 或绝对路径的第三方插件仍可能写到包外。
 
-## Updating fails with "patch failed"
+## 更新时报 "patch failed"
 
-Upstream changed the JavaScript layout. `Patch-Asar.js` exits before modifying the payload, so the current
-version keeps working. Rebuild from source after updating the anchors in `scripts/patch-asar.js`, or report the
-upstream version in an issue.
+上游改了 JavaScript 结构。`Patch-Asar.js` 会在修改 payload 之前退出，当前版本继续可用。
+更新 `scripts/patch-asar.js` 里的锚点后本地重建，或者带上游版本号提 issue。
 
-## Updating fails with "WinRAR or 7-Zip is required"
+## 更新时报 "WinRAR or 7-Zip is required"
 
-Install either tool. The updater extracts the official installer and never runs it, so it needs an extractor.
+装其中之一。更新器需要解包官方安装包、不会运行它，所以必须有解包工具。
 
-## Drive letter changed and the workspace is missing
+## 换了盘符，工作区不见了
 
-DSH stores workspace paths as absolute paths. Re-add/select the workspace on the new drive letter; sessions stay
-under `.dsh`. Use a fixed drive letter if you switch machines often.
+DSH 把工作区路径存成绝对路径。在新盘符上重新选择/添加工作区即可；会话仍在 `.dsh` 下。
+经常换机器的话，建议给 U 盘固定一个盘符。
 
-## Login state lost after moving the drive
+## 换了盘之后登录状态丢失
 
-Cookies live in `@deepseek-ai\dsh-desktop`. Make sure you copy the whole folder while the app is closed, and do
-not delete `Local State` (it holds the key used to encrypt cookies).
+Cookie 在 `@deepseek-ai\dsh-desktop`。确保应用关闭时整目录拷贝，并且不要删除 `Local State`
+（它保存着加密 Cookie 所用的密钥）。
 
-## Rolling back
+## 回滚
 
-Keep a copy of the previous package folder before updating, or rebuild the previous version with
-`pwsh scripts/build.ps1 -Version <old-version>` and extract it over the package while keeping data directories.
+更新前把整个包目录复制一份；或者用 `pwsh scripts/build.ps1 -Version <旧版本>` 重建旧版本，
+解压覆盖到包目录，保留数据目录即可。

@@ -1,46 +1,46 @@
-name: Feature request
-description: Suggest an improvement to the portable package or the build tooling
+name: 功能建议
+description: 对便携包或构建工具提出改进建议
 title: "[feature] "
 labels: ["enhancement"]
 body:
   - type: markdown
     attributes:
       value: |
-        Keep in mind the project's scope: Windows x64 only, patching `resources/app.asar` only, minimal surface area.
+        请注意项目范围：仅 Windows x64，仅补丁 `resources/app.asar`，补丁面保持最小。
   - type: textarea
     id: problem
     attributes:
-      label: Problem
-      description: What is missing or inconvenient today?
+      label: 问题
+      description: 目前缺什么，或哪里不好用？
     validations:
       required: true
   - type: textarea
     id: proposal
     attributes:
-      label: Proposal
-      description: What should change, and where in the package or scripts?
+      label: 建议方案
+      description: 希望改成什么样，涉及包内哪个部分或哪个脚本？
     validations:
       required: true
   - type: textarea
     id: alternatives
     attributes:
-      label: Alternatives considered
+      label: 考虑过的替代方案
   - type: dropdown
     id: area
     attributes:
-      label: Area
+      label: 涉及范围
       options:
-        - Portability / data layout
-        - Updates
-        - Build tooling
-        - Documentation
-        - Other
+        - 便携性 / 数据布局
+        - 更新
+        - 构建工具
+        - 文档
+        - 其它
     validations:
       required: true
   - type: checkboxes
     id: confirmations
     attributes:
-      label: Confirmations
+      label: 确认事项
       options:
-        - label: This request stays within Windows x64 and the app.asar-only scope.
+        - label: 这个建议仍在 Windows x64 与"只补丁 app.asar"的范围内。
           required: true

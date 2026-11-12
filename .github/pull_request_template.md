@@ -1,20 +1,20 @@
-## What changed
+## 改了什么
 
-<!-- Describe the change and the problem it solves. -->
+<!-- 说明改动内容以及它解决了什么问题。 -->
 
-## Verification
+## 验证
 
-- Upstream version tested:
-- Commands run:
+- 测试的上游版本：
+- 执行过的命令：
 
 ```powershell
 pwsh scripts/build.ps1 -Version latest -NoArchive
 ```
 
-- [ ] The patched package starts and creates `.dsh` next to the executable
-- [ ] No registry keys are written by default
-- [ ] No personal data or build artifacts are included in this PR
+- [ ] 打过补丁的包能启动，并在 exe 同级创建 `.dsh`
+- [ ] 默认不写注册表
+- [ ] 本 PR 不含个人数据或构建产物
 
-## Notes
+## 备注
 
-<!-- Anything reviewers should know: anchor changes, trade-offs, follow-ups. -->
+<!-- 审阅者需要知道的：锚点改动、取舍、后续计划。 -->

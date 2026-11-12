@@ -1,56 +1,52 @@
-# Third-party notices
+# 第三方声明
 
-Release packages built by this repository embed the official DeepSeek Harness
-desktop payload. This project does not relicense that payload; it only patches
-`resources/app.asar` so the application stays portable.
+本仓库构建的发布包内嵌官方 DeepSeek Harness 桌面 payload。本项目不为该 payload 重新授权，
+只是补丁 `resources/app.asar`，让应用保持便携。
 
 ## DeepSeek Harness
 
-- Project: https://github.com/deepseek-ai/deepseek-harness
-- License: MIT
-- Copyright: Hangzhou DeepSeek Artificial Intelligence Co., Ltd.
+- 项目：https://github.com/deepseek-ai/deepseek-harness
+- 许可证：MIT
+- 版权：Hangzhou DeepSeek Artificial Intelligence Co., Ltd.
 
-The official installer's files (including `LICENSE.electron.txt` and
-`LICENSES.chromium.html`) are shipped unchanged in the release package.
+官方安装包的文件（含 `LICENSE.electron.txt` 与 `LICENSES.chromium.html`）在发布包中原样保留。
 
 ## Electron
 
-- Project: https://www.electronjs.org/
-- License: MIT
-- The release package contains the official Electron runtime as shipped by the
-  DeepSeek Harness installer.
+- 项目：https://www.electronjs.org/
+- 许可证：MIT
+- 发布包内的 Electron 运行时由官方 DeepSeek Harness 安装包提供。
 
 ## Chromium
 
-- Project: https://www.chromium.org/
-- License: BSD-style and third-party licenses
-- See `LICENSES.chromium.html` in the release package.
+- 项目：https://www.chromium.org/
+- 许可证：BSD 风格许可及第三方许可
+- 详见发布包内的 `LICENSES.chromium.html`。
 
 ## Node.js
 
-- Project: https://nodejs.org/
-- License: MIT
-- Bundled by the official installer under `resources/runtime/primary-runtime/dependencies/node`.
+- 项目：https://nodejs.org/
+- 许可证：MIT
+- 由官方安装包放在 `resources/runtime/primary-runtime/dependencies/node`。
 
 ## Python
 
-- Project: https://www.python.org/
-- License: PSF License
-- Bundled by the official installer under `resources/runtime/primary-runtime/dependencies/python`.
+- 项目：https://www.python.org/
+- 许可证：PSF License
+- 由官方安装包放在 `resources/runtime/primary-runtime/dependencies/python`。
 
 ## pnpm
 
-- Project: https://pnpm.io/
-- License: MIT
-- Bundled by the official installer under `resources/runtime/primary-runtime/dependencies/pnpm`.
+- 项目：https://pnpm.io/
+- 许可证：MIT
+- 由官方安装包放在 `resources/runtime/primary-runtime/dependencies/pnpm`。
 
-## Build and update tools (not redistributed)
+## 构建与更新工具（不随包分发）
 
-- 7-Zip: https://www.7-zip.org/ (LGPL); used locally by the build script if installed.
-- WinRAR: proprietary; used locally by the updater if installed.
+- 7-Zip：https://www.7-zip.org/（LGPL）；构建脚本在本机安装了它时才会调用。
+- WinRAR：专有软件；更新器在本机安装了它时才会调用。
 
-## Trademarks
+## 商标
 
-"DeepSeek", "DeepSeek Harness" and associated logos are trademarks of their
-owner. This project is unofficial and does not use the official logo as its
-project identity.
+"DeepSeek"、"DeepSeek Harness" 及相关标识是其权利人的商标。本项目为非官方项目，
+不使用官方标识作为项目身份。
