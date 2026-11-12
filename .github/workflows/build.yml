@@ -21,11 +21,24 @@ concurrency:
 jobs:
   windows:
     runs-on: windows-latest
-    env:
-      BUILD_VERSION: ${{ github.event.inputs.version || 'latest' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      # A tag pins the payload version; only manual runs fall back to the feed.
+      - name: Resolve version
+        shell: pwsh
+        run: |
+          $version = '${{ github.event.inputs.version }}'
+          if (-not $version) {
+            if ($env:GITHUB_REF -like 'refs/tags/v*') {
+              $version = $env:GITHUB_REF.Substring('refs/tags/v'.Length)
+            } else {
+              $version = 'latest'
+            }
+          }
+          "BUILD_VERSION=$version" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+          Write-Host "Building version: $version"
 
       - name: Build portable package
         shell: pwsh
@@ -44,4 +57,18 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           $tag = $env:GITHUB_REF -replace '^refs/tags/', ''
-          gh release create $tag dist/*.zip dist/*.sha256 --title $tag --notes "Portable build produced from the official DeepSeek Harness installer."
+          $version = $tag -replace '^v', ''
+          $notes = (@(
+            "Portable Windows x64 build of DeepSeek Harness ${version}.",
+            "",
+            "- Built from the official DeepSeek Harness installer; its Authenticode signature was verified before extraction.",
+            "- The payload is patched so every writable path stays next to the executable.",
+            "- Compare the SHA-256 of the downloaded zip with the attached .sha256 file.",
+            "- Unofficial build: not affiliated with or supported by DeepSeek.",
+            "",
+            "See README.md for usage and CHANGELOG.md for the change list."
+          ) -join "`n")
+          $arguments = @('release', 'create', $tag) + @(Get-ChildItem dist/*.zip, dist/*.sha256 | ForEach-Object { $_.FullName })
+          $arguments += @('--title', $tag, '--notes', $notes)
+          if ($version -match '-') { $arguments += '--prerelease' }
+          gh @arguments

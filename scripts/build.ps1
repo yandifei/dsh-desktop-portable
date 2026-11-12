@@ -123,6 +123,14 @@ try {
     Expand-InstallerPayload $extractor $installer $payload
     if (-not (Test-Path (Join-Path $payload 'DeepSeek Harness.exe'))) { throw 'Extraction failed: executable not found.' }
 
+    # The NSIS outer layer keeps its own copy of the payload in $PLUGINSDIR. It is
+    # an extractor artifact, not part of the app, and it is ~285 MB of dead weight.
+    $nsisLeftovers = Join-Path $payload '$PLUGINSDIR'
+    if (Test-Path $nsisLeftovers) {
+        Remove-Item $nsisLeftovers -Recurse -Force
+        Write-Host 'Removed the NSIS $PLUGINSDIR staging directory.'
+    }
+
     Write-Step 'Applying portable patches'
     $node = Join-Path $payload 'resources\runtime\primary-runtime\dependencies\node\bin\node.exe'
     if (-not (Test-Path $node)) { throw 'Bundled Node runtime not found in the extracted payload.' }

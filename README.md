@@ -46,8 +46,8 @@
 **解压前先校验：**
 
 ```powershell
-Get-FileHash .\DSH-Desktop-Portable-0.2.2-rc.1-win-x64.zip -Algorithm SHA256
-Get-Content .\DSH-Desktop-Portable-0.2.2-rc.1-win-x64.zip.sha256
+Get-FileHash .\DSH-Desktop-Portable-0.2.2-rc.2-win-x64.zip -Algorithm SHA256
+Get-Content .\DSH-Desktop-Portable-0.2.2-rc.2-win-x64.zip.sha256
 ```
 
 两行哈希一致再解压。更细的排障见 [docs/troubleshooting.md](docs/troubleshooting.md)。
@@ -133,7 +133,7 @@ pwsh scripts/build.ps1 -Version latest
 pwsh scripts/build.ps1 -Version latest -NoArchive
 
 # 验证成品：校验和、必需文件、是否混入个人数据
-pwsh scripts/verify-release.ps1 -Zip dist\DSH-Desktop-Portable-0.2.2-rc.1-win-x64.zip
+pwsh scripts/verify-release.ps1 -Zip dist\DSH-Desktop-Portable-0.2.2-rc.2-win-x64.zip
 ```
 
 产物在 `dist/`，包含 zip 和 `.sha256`。构建流程与固定版本的写法见 [docs/build.md](docs/build.md)。

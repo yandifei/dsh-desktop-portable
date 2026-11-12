@@ -54,8 +54,8 @@ friends next to the executable.
 **Verify before extracting:**
 
 ```powershell
-Get-FileHash .\DSH-Desktop-Portable-0.2.2-rc.1-win-x64.zip -Algorithm SHA256
-Get-Content .\DSH-Desktop-Portable-0.2.2-rc.1-win-x64.zip.sha256
+Get-FileHash .\DSH-Desktop-Portable-0.2.2-rc.2-win-x64.zip -Algorithm SHA256
+Get-Content .\DSH-Desktop-Portable-0.2.2-rc.2-win-x64.zip.sha256
 ```
 
 The two hashes must match. For troubleshooting, see [docs/troubleshooting.md](docs/troubleshooting.md).
@@ -143,7 +143,7 @@ pwsh scripts/build.ps1 -Version latest
 pwsh scripts/build.ps1 -Version latest -NoArchive
 
 # verify an artifact: checksum, required files, no personal data
-pwsh scripts/verify-release.ps1 -Zip dist\DSH-Desktop-Portable-0.2.2-rc.1-win-x64.zip
+pwsh scripts/verify-release.ps1 -Zip dist\DSH-Desktop-Portable-0.2.2-rc.2-win-x64.zip
 ```
 
 Output lands in `dist/` as a zip plus a `.sha256`. See [docs/build.md](docs/build.md) for the full flow and for

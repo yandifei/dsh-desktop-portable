@@ -17,6 +17,59 @@ function Pause-Exit([int]$code) {
     exit $code
 }
 
+function ConvertTo-VersionParts([string]$text) {
+    $clean = ($text.Trim() -replace '^[vV]', '')
+    $segments = $clean -split '-', 2
+    $core = @()
+    foreach ($piece in ($segments[0] -split '\.')) {
+        $number = 0
+        [void][int]::TryParse(($piece -replace '[^0-9]', ''), [ref]$number)
+        $core += $number
+    }
+    $pre = @()
+    if ($segments.Count -gt 1 -and $segments[1]) { $pre = $segments[1] -split '\.' }
+    return [pscustomobject]@{ Core = $core; Pre = $pre }
+}
+
+# Compares two versions the way the release feed orders them: 1 when $left is newer,
+# 0 when equal, -1 when older. Semver ordering, so 0.2.2-rc.2 > 0.2.2-rc.1 and
+# a release is newer than any of its prereleases.
+function Compare-DshVersion([string]$left, [string]$right) {
+    $a = ConvertTo-VersionParts $left
+    $b = ConvertTo-VersionParts $right
+    $count = [Math]::Max($a.Core.Count, $b.Core.Count)
+    for ($i = 0; $i -lt $count; $i++) {
+        $x = if ($i -lt $a.Core.Count) { $a.Core[$i] } else { 0 }
+        $y = if ($i -lt $b.Core.Count) { $b.Core[$i] } else { 0 }
+        if ($x -ne $y) { return [Math]::Sign($x - $y) }
+    }
+    if ($a.Pre.Count -eq 0 -and $b.Pre.Count -eq 0) { return 0 }
+    if ($a.Pre.Count -eq 0) { return 1 }
+    if ($b.Pre.Count -eq 0) { return -1 }
+    $count = [Math]::Max($a.Pre.Count, $b.Pre.Count)
+    for ($i = 0; $i -lt $count; $i++) {
+        if ($i -ge $a.Pre.Count) { return -1 }
+        if ($i -ge $b.Pre.Count) { return 1 }
+        $x = $a.Pre[$i]
+        $y = $b.Pre[$i]
+        $xn = 0
+        $yn = 0
+        $xIsNumber = [int]::TryParse($x, [ref]$xn)
+        $yIsNumber = [int]::TryParse($y, [ref]$yn)
+        if ($xIsNumber -and $yIsNumber) {
+            if ($xn -ne $yn) { return [Math]::Sign($xn - $yn) }
+        } elseif ($xIsNumber) {
+            return -1
+        } elseif ($yIsNumber) {
+            return 1
+        } else {
+            $comparison = [string]::CompareOrdinal($x, $y)
+            if ($comparison -ne 0) { return [Math]::Sign($comparison) }
+        }
+    }
+    return 0
+}
+
 function Expand-InstallerPayload([string]$extractor, [string]$installer, [string]$destination) {
     if ($extractor -like '*WinRAR*') {
         & $extractor x -y -ibck $installer ($destination + '\') | Out-Null
@@ -77,9 +130,17 @@ try {
     }
 
     Write-Host ('Current version: {0}    Official version: {1}' -f $current, $version)
-    if ($current -eq $version) {
-        Write-Host 'Already up to date.'
-        Pause-Exit 0
+    if ($current) {
+        $order = Compare-DshVersion $current $version
+        if ($order -eq 0) {
+            Write-Host 'Already up to date.'
+            Pause-Exit 0
+        }
+        if ($order -gt 0) {
+            Write-Host ('This package ({0}) is newer than the official feed ({1}); nothing to do.' -f $current, $version)
+            Write-Host 'Waiting for the official feed to catch up avoids downgrading.'
+            Pause-Exit 0
+        }
     }
 
     $extractor = Find-Extractor
@@ -112,6 +173,10 @@ try {
     Write-Host 'Extracting the official installer (no installation, no registry writes)...'
     Expand-InstallerPayload $extractor $setup $staging
     if (-not (Test-Path (Join-Path $staging 'DeepSeek Harness.exe'))) { throw 'Extraction failed: executable not found.' }
+
+    # Drop the NSIS outer layer's staging directory so it is not copied into the package.
+    $nsisLeftovers = Join-Path $staging '$PLUGINSDIR'
+    if (Test-Path $nsisLeftovers) { Remove-Item $nsisLeftovers -Recurse -Force }
 
     Write-Host 'Re-applying portable patches...'
     $node = Join-Path $root 'resources\runtime\primary-runtime\dependencies\node\bin\node.exe'
