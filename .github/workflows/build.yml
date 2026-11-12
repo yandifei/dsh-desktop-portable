@@ -69,6 +69,8 @@ jobs:
             "See README.md for usage and CHANGELOG.md for the change list."
           ) -join "`n")
           $arguments = @('release', 'create', $tag) + @(Get-ChildItem dist/*.zip, dist/*.sha256 | ForEach-Object { $_.FullName })
-          $arguments += @('--title', $tag, '--notes', $notes)
-          if ($version -match '-') { $arguments += '--prerelease' }
+          # Every build here is a release candidate, and GitHub treats "latest" and
+          # "pre-release" as mutually exclusive. Point "latest" at the newest build so
+          # /releases/latest and the Releases page always offer the current download.
+          $arguments += @('--title', $tag, '--notes', $notes, '--latest')
           gh @arguments

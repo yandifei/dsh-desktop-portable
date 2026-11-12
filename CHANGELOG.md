@@ -15,10 +15,13 @@ Repackaged on the upstream `0.2.2-rc.2` payload (upstream GitHub release `dsh-v0
 - Packaging: the NSIS extractor's `$PLUGINSDIR` staging directory (about 285 MB, including its own copy of
   the payload) is now removed after extraction instead of being shipped inside the zip. The build and the
   updater both did this, so update packages also stop copying those files into the package folder.
-- Release workflow: a `v*` tag now decides which payload version is built. Previously every tag built the
-  feed's `latest`, which would have published the wrong payload for a pinned tag. Tags containing a
-  prerelease suffix are now published as GitHub prereleases, and the release notes state the exact
-  payload version.
+- Release workflow: a `v*` tag now decides which payload version is built (previously every tag built the
+  feed's `latest`, which would have published the wrong payload for a pinned tag), and the release notes
+  state the exact payload version.
+- Release labels: builds are published as the **latest** release rather than a prerelease, so
+  `/releases/latest` and the Releases page always offer the newest download. GitHub treats "latest" and
+  "pre-release" as mutually exclusive, so rc builds no longer carry the pre-release label — the tag itself
+  still reads `rc`.
 
 ## v0.2.2-rc.1 (2026-11-11)
 

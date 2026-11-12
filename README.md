@@ -5,7 +5,7 @@
 **DeepSeek Harness 的 Windows 便携版**：解压即用，不跑安装器、不写注册表，
 会话 / 凭据 / 插件 / 缓存 / 默认工作区全部留在 U 盘里。
 
-[![平台](https://img.shields.io/badge/Windows-10%20%2F%2011%20x64-0078D4?style=flat-square&logo=windows11&logoColor=white)](https://github.com/yandifei/dsh-desktop-portable/releases) [![版本](https://img.shields.io/github/v/release/yandifei/dsh-desktop-portable?include_prereleases&style=flat-square&label=release&color=4D6BFE)](https://github.com/yandifei/dsh-desktop-portable/releases) [![下载量](https://img.shields.io/github/downloads/yandifei/dsh-desktop-portable/total?style=flat-square&color=4D6BFE)](https://github.com/yandifei/dsh-desktop-portable/releases) [![上游兼容检查](https://github.com/yandifei/dsh-desktop-portable/actions/workflows/upstream-check.yml/badge.svg)](https://github.com/yandifei/dsh-desktop-portable/actions/workflows/upstream-check.yml) [![许可证](https://img.shields.io/badge/license-MIT-2EA44F?style=flat-square)](LICENSE)
+[![平台](https://img.shields.io/badge/Windows-10%20%2F%2011%20x64-0078D4?style=flat-square&logo=windows11&logoColor=white)](https://github.com/yandifei/dsh-desktop-portable/releases/latest) [![版本](https://img.shields.io/github/v/release/yandifei/dsh-desktop-portable?include_prereleases&style=flat-square&label=release&color=4D6BFE)](https://github.com/yandifei/dsh-desktop-portable/releases/latest) [![下载量](https://img.shields.io/github/downloads/yandifei/dsh-desktop-portable/total?style=flat-square&color=4D6BFE)](https://github.com/yandifei/dsh-desktop-portable/releases/latest) [![上游兼容检查](https://github.com/yandifei/dsh-desktop-portable/actions/workflows/upstream-check.yml/badge.svg)](https://github.com/yandifei/dsh-desktop-portable/actions/workflows/upstream-check.yml) [![许可证](https://img.shields.io/badge/license-MIT-2EA44F?style=flat-square)](LICENSE)
 
 **简体中文** · [English](README.en.md)
 
@@ -35,7 +35,7 @@
 
 ## 🚀 快速开始
 
-1. 到 [Releases](https://github.com/yandifei/dsh-desktop-portable/releases) 下载
+1. 到 [Releases](https://github.com/yandifei/dsh-desktop-portable/releases/latest) 下载
    `DSH-Desktop-Portable-<版本>-win-x64.zip` 和对应的 `.sha256`。
 2. 解压到 U 盘（建议 NTFS，路径尽量短、别带奇怪字符）。
 3. 双击 `DeepSeek Harness.exe`，在欢迎页登录账号或填写 API Key。
