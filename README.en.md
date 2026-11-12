@@ -5,7 +5,7 @@
 **DeepSeek Harness, portable.** Unzip and run — no installer, no registry writes.
 Sessions, credentials, plugins, caches and the first-run workspace all stay on the drive.
 
-[![Platform](https://img.shields.io/badge/Windows-10%20%2F%2011%20x64-0078D4?style=flat-square&logo=windows11&logoColor=white)](https://github.com/yandifei/dsh-desktop-portable/releases/latest) [![Release](https://img.shields.io/github/v/release/yandifei/dsh-desktop-portable?include_prereleases&style=flat-square&label=release&color=4D6BFE)](https://github.com/yandifei/dsh-desktop-portable/releases) [![Downloads](https://img.shields.io/github/downloads/yandifei/dsh-desktop-portable/total?style=flat-square&color=4D6BFE)](https://github.com/yandifei/dsh-desktop-portable/releases) [![Upstream check](https://github.com/yandifei/dsh-desktop-portable/actions/workflows/upstream-check.yml/badge.svg)](https://github.com/yandifei/dsh-desktop-portable/actions/workflows/upstream-check.yml) [![License](https://img.shields.io/badge/license-MIT-2EA44F?style=flat-square)](LICENSE)
+[![Platform](https://img.shields.io/badge/Windows-10%20%2F%2011%20x64-0078D4?style=flat-square&logo=windows11&logoColor=white)](https://github.com/yandifei/dsh-desktop-portable/releases) [![Release](https://img.shields.io/github/v/release/yandifei/dsh-desktop-portable?include_prereleases&style=flat-square&label=release&color=4D6BFE)](https://github.com/yandifei/dsh-desktop-portable/releases) [![Downloads](https://img.shields.io/github/downloads/yandifei/dsh-desktop-portable/total?style=flat-square&color=4D6BFE)](https://github.com/yandifei/dsh-desktop-portable/releases) [![Upstream check](https://github.com/yandifei/dsh-desktop-portable/actions/workflows/upstream-check.yml/badge.svg)](https://github.com/yandifei/dsh-desktop-portable/actions/workflows/upstream-check.yml) [![License](https://img.shields.io/badge/license-MIT-2EA44F?style=flat-square)](LICENSE)
 
 [简体中文](README.md) · **English**
 
@@ -43,7 +43,7 @@ is patched.
 ## 🚀 Quick start
 
 1. Download `DSH-Desktop-Portable-<version>-win-x64.zip` and its `.sha256` from
-   [Releases](https://github.com/yandifei/dsh-desktop-portable/releases/latest).
+   [Releases](https://github.com/yandifei/dsh-desktop-portable/releases).
 2. Extract it to your USB drive (NTFS recommended, keep the path short and plain).
 3. Double-click `DeepSeek Harness.exe` and sign in or add an API key on the welcome page.
 4. To quit, use **tray icon → Quit**, wait for the process to exit, then eject the drive safely.
