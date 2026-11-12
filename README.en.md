@@ -128,6 +128,12 @@ Run `Update-Harness.cmd` (or `Update-Harness.ps1`) from the package root, with D
 
 Rolling back is just restoring a copy of the package folder you kept before updating.
 
+> [!TIP]
+> The updater follows the official feed and **never downgrades**: when the package is newer than the feed
+> (for example, the feed has not caught up with a release published here) it reports that you are up to date.
+> To upgrade manually, extract the matching release zip over the program files, keeping the `.dsh`, `home`,
+> `@deepseek-ai` and `@deepseek-aidsh-desktop-updater` data directories untouched.
+
 ## 🛠️ Build it yourself
 
 Requirements: Windows 10/11 x64, PowerShell 7, 7-Zip or WinRAR, and network access to `download.deepseek.com`.

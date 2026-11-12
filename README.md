@@ -118,6 +118,11 @@ Get-Content .\DSH-Desktop-Portable-0.2.2-rc.2-win-x64.zip.sha256
 
 回滚很简单：更新前把整个包目录复制一份，需要时换回去即可。
 
+> [!TIP]
+> 更新器只跟随官方 feed，并且**不会降级**：如果当前包比 feed 上的版本还新（例如官方还没推进到 Release 里的
+> 版本），它会提示已经是最新。想手动升级时，下载对应版本的 zip 解压覆盖程序文件即可，`.dsh`、`home`、
+> `@deepseek-ai`、`@deepseek-aidsh-desktop-updater` 这些数据目录不要动。
+
 ## 🛠️ 自己构建
 
 环境：Windows 10/11 x64、PowerShell 7、7-Zip 或 WinRAR、能访问 `download.deepseek.com`。
