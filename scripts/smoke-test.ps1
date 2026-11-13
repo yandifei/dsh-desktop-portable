@@ -42,7 +42,10 @@ $portableHome = Join-Path $dir 'home'
 $tempDir = Join-Path $dir '@deepseek-aidsh-desktop-updater'
 
 Write-Host ('启动：' + $exe)
-$process = Start-Process -FilePath $exe -WorkingDirectory $dir -PassThru
+# 应用的 stdout 里带 dsh web 的访问 token，重定向到文件，不往控制台回显。
+$appOut = Join-Path $dir 'app-stdout.txt'
+$appErr = Join-Path $dir 'app-stderr.txt'
+$process = Start-Process -FilePath $exe -WorkingDirectory $dir -PassThru -RedirectStandardOutput $appOut -RedirectStandardError $appErr
 
 $deadline = (Get-Date).AddSeconds($TimeoutSeconds)
 $ready = $false
@@ -57,6 +60,13 @@ $created = [pscustomobject]@{
     '.dsh'                               = Test-Path $dshHome
     'home'                               = Test-Path $portableHome
     '@deepseek-aidsh-desktop-updater'    = Test-Path $tempDir
+}
+
+if (Test-Path $appOut) {
+    $appText = Get-Content $appOut -Raw -ErrorAction SilentlyContinue
+    if ($appText -match 'dsh web:\s*(http://[^\s?]+)') {
+        Write-Host ('应用已启动本地服务：' + $Matches[1] + '（访问 token 已隐去）')
+    }
 }
 
 Write-Host ''
