@@ -109,15 +109,19 @@ release: 打包 0.2.2-rc.2，修掉降级与 NSIS 残留
 # 1. 补丁锚点是否还能匹配新 payload
 pwsh scripts/build.ps1 -Version <版本> -NoArchive
 
-# 2. 校验成品：校验和、必需文件、有没有混入个人数据
+# 2. 校验成品：校验和、必需文件、有无个人数据、asar 是否可加载
 pwsh scripts/verify-release.ps1 -Zip dist\DSH-Desktop-Portable-<版本>-win-x64.zip
 ```
 
 - 确认包内 `resources\runtime\primary-runtime\runtime.json` 的 `desktopVersion` 正确。
 - 确认 `resources\app.asar` 里有四个补丁标记（`__dshPortableRoot`、`DSH_HOME ??=`、
   `DSH_DESKTOP_REGISTER_PROTOCOL`、`.dsh\workspace`）。
+- **确认 asar 根 `package.json` 能被 `JSON.parse`**。重写 asar 时数据区起点是 `8 + headerSize`
+  （含 4 字节对齐填充），算错会让每个文件整体位移几字节，而 offset/integrity 又自洽，
+  校验和与"文件齐全"都发现不了——只有真正解析清单才拦得住（rc.2 就栽在这里）。
 - 确认包里没有 `$PLUGINSDIR`（NSIS 解包残留，约 285 MB）。
 - 不提交 `dist/`、`.dsh/`、`home/`、`@deepseek-ai/`、`@deepseek-aidsh-desktop-updater/`（`.gitignore` 已覆盖）。
+- 发布后把线上包下载回来跑一次 `verify-release.ps1`，并核对其 SHA-256 与 Release 附件一致。
 
 ## 安全
 
