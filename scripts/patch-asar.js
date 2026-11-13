@@ -38,11 +38,15 @@ if (!fs.existsSync(ASAR)) fail('app.asar not found: ' + ASAR);
 const fd = fs.openSync(ASAR, 'r');
 const head = Buffer.alloc(16);
 fs.readSync(fd, head, 0, 16, 0);
+const headerSize = head.readUInt32LE(4);
 const jsonLength = head.readUInt32LE(12);
 const headerBuffer = Buffer.alloc(jsonLength);
 fs.readSync(fd, headerBuffer, 0, jsonLength, 16);
 const header = JSON.parse(headerBuffer.toString('utf8').replace(/\0+$/u, ''));
-const dataBase = 16 + jsonLength;
+// The header JSON is padded to a 4-byte boundary, so the payload starts at
+// 8 + headerSize, not at 16 + jsonLength. Using the latter shifts every read by
+// the padding width (0-3 bytes) and silently corrupts every packed file.
+const dataBase = 8 + headerSize;
 
 function readEntry(node) {
   const buffer = Buffer.alloc(node.size);
@@ -158,6 +162,100 @@ patched.set(MAIN, patchMain(readEntry(mainNode)));
 patched.set(TYPES_DIR, patchWorkspaceTypes(readEntry(typesNode)));
 patched.set(CONTROLLER, patchWorkspaceController(readEntry(controllerNode)));
 
+// Remember where every file lived in the original archive so the written copy can
+// be checked byte for byte (the walk below rewrites offset/size in place).
+const originalLayout = new Map();
+(function collect(node, prefix) {
+  for (const [name, child] of Object.entries(node.files || {})) {
+    const filePath = prefix ? prefix + '/' + name : name;
+    if (child.files) {
+      collect(child, filePath);
+      continue;
+    }
+    if (child.unpacked) continue;
+    originalLayout.set(filePath, { offset: Number(child.offset), size: child.size });
+  }
+})(header, '');
+
+function readOriginal(entry) {
+  const buffer = Buffer.alloc(entry.size);
+  fs.readSync(fd, buffer, 0, entry.size, dataBase + entry.offset);
+  return buffer;
+}
+
+// Reads the archive back and refuses to install it unless the result is sane:
+// the root manifest must parse, the patches must be present, and every file we
+// did not touch must still be byte-identical to the original archive.
+function verifyArchive(outPath) {
+  const vfd = fs.openSync(outPath, 'r');
+  try {
+    const size = fs.fstatSync(vfd).size;
+    const vhead = Buffer.alloc(16);
+    fs.readSync(vfd, vhead, 0, 16, 0);
+    const vjsonLength = vhead.readUInt32LE(12);
+    const vdataBase = 8 + vhead.readUInt32LE(4);
+    const vbuffer = Buffer.alloc(vjsonLength);
+    fs.readSync(vfd, vbuffer, 0, vjsonLength, 16);
+    const vheader = JSON.parse(vbuffer.toString('utf8').replace(/\0+$/u, ''));
+
+    const readOut = (node) => {
+      const offset = vdataBase + Number(node.offset);
+      if (node.size < 0 || offset + node.size > size) {
+        throw new Error('entry out of bounds: ' + node.size + ' bytes at ' + offset);
+      }
+      const buffer = Buffer.alloc(node.size);
+      fs.readSync(vfd, buffer, 0, node.size, offset);
+      return buffer;
+    };
+
+    const manifest = JSON.parse(readOut(vheader.files['package.json']).toString('utf8'));
+    if (manifest.name !== '@deepseek-ai/dsh-desktop') {
+      throw new Error('root package.json does not look like the app manifest');
+    }
+
+    const markers = [
+      ['lib/main.js', '__dshPortableRoot'],
+      [TYPES_DIR, 'portableHome'],
+      [CONTROLLER, 'portableHome'],
+    ];
+    for (const [filePath, marker] of markers) {
+      const buffer = readOut(readNodeByPath(vheader, filePath));
+      if (!buffer.includes(marker)) throw new Error('patch marker missing from ' + filePath);
+    }
+
+    let compared = 0;
+    (function walkVerify(node, prefix) {
+      for (const [name, child] of Object.entries(node.files || {})) {
+        const filePath = prefix ? prefix + '/' + name : name;
+        if (child.files) {
+          walkVerify(child, filePath);
+          continue;
+        }
+        if (child.unpacked) continue;
+        const written = readOut(child);
+        if (patched.has(filePath)) continue;
+        const original = originalLayout.get(filePath);
+        if (!original) throw new Error('unexpected new entry: ' + filePath);
+        const source = readOriginal(original);
+        if (!written.equals(source)) throw new Error('content changed unexpectedly: ' + filePath);
+        compared++;
+      }
+    })(vheader, '');
+    console.log('verified: ' + compared + ' untouched files identical, root package.json parses');
+  } finally {
+    fs.closeSync(vfd);
+  }
+}
+
+function readNodeByPath(node, filePath) {
+  let current = node;
+  for (const part of filePath.split('/')) {
+    current = current.files[part];
+    if (!current) fail('asar layout changed: missing ' + filePath);
+  }
+  return current;
+}
+
 const items = [];
 let cursor = 0;
 
@@ -195,6 +293,15 @@ fs.writeSync(output, preamble);
 fs.writeSync(output, paddedHeader);
 for (const data of items) fs.writeSync(output, data);
 fs.closeSync(output);
+
+try {
+  verifyArchive(OUT);
+} catch (error) {
+  fs.closeSync(fd);
+  fs.unlinkSync(OUT);
+  fail('post-write verification failed: ' + error.message);
+}
+
 fs.closeSync(fd);
 
 fs.unlinkSync(ASAR);

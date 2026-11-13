@@ -17,6 +17,14 @@
   Release 正文会写明确切版本。
 - 发布标记：以 **latest** 发布而非预发布，保证 `/releases/latest` 与 Releases 页始终指向最新可下载的包。
   GitHub 的 "latest" 与 "pre-release" 互斥，因此 rc 构建不再带预发布标记——版本号本身仍是 `rc`。
+- **修复 rc.2 发布包无法启动**：`Patch-Asar.js` 计算数据区起点时用了 `16 + jsonLength`，忽略了 header 的
+  4 字节对齐填充。当 header 长度不是 4 的倍数时（rc.2 的 padding 为 3），读文件会整体前移 3 字节：
+  根 `package.json` 变成 `);{…}` 的非法 JSON，Electron 回退到默认页；完整性块因为也是按同一份错位数据
+  重算的，所以「校验全过」但内容已坏。rc.1 的 header 恰好对齐，所以没暴露。
+  现在改为按文件头里的 `headerSize` 计算数据区起点（`8 + headerSize`），并在写完归档后自检：
+  根 `package.json` 必须能 `JSON.parse`、三处补丁标记必须存在、**所有未改动文件必须与原包逐字节一致**；
+  任一项不通过就删除临时归档、保持原 payload 不动（退出码 2）。
+  `verify-release.ps1` 增加同样的断言，这类事故以后在发布前就会被拦下。
 
 ## v0.2.2-rc.1（2026-11-11）
 
