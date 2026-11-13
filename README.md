@@ -52,6 +52,12 @@ Get-Content .\DSH-Desktop-Portable-0.2.2-rc.2-win-x64.zip.sha256
 
 两行哈希一致再解压。更细的排障见 [docs/troubleshooting.md](docs/troubleshooting.md)。
 
+> [!TIP]
+> 解压完整的话是**约 7900 个文件、约 1.1 GB**，其中 `resources\app.asar.unpacked` 一个目录就有一千多个文件。
+> 如果解压后目录明显偏小、或找不到 `app.asar.unpacked`，说明下载/解压被中断了——用 7-Zip 重新解压，
+> 别在资源管理器里只拖一部分出来。缺了这层 unpacked 文件，应用会以
+> `ENOENT ... resources\app.asar.unpacked` 报错退出。
+
 ## 🧭 与官方安装版对比
 
 | | 官方安装版 | 本项目（便携版） |

@@ -60,6 +60,12 @@ Get-Content .\DSH-Desktop-Portable-0.2.2-rc.2-win-x64.zip.sha256
 
 The two hashes must match. For troubleshooting, see [docs/troubleshooting.md](docs/troubleshooting.md).
 
+> [!TIP]
+> A complete extraction is **about 7,900 files / ~1.1 GB**; the `resources\app.asar.unpacked` folder alone holds
+> over a thousand of them. If the folder is noticeably smaller or `app.asar.unpacked` is missing, the download or
+> extraction was interrupted — re-extract with 7-Zip instead of copying part of the tree out of Explorer.
+> Without those unpacked files the app exits with `ENOENT ... resources\app.asar.unpacked`.
+
 ## 🧭 Portable vs. official installer
 
 | | Official installer | This project |
