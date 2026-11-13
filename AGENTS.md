@@ -120,6 +120,9 @@ pwsh scripts/verify-release.ps1 -Zip dist\DSH-Desktop-Portable-<版本>-win-x64.
   （含 4 字节对齐填充），算错会让每个文件整体位移几字节，而 offset/integrity 又自洽，
   校验和与"文件齐全"都发现不了——只有真正解析清单才拦得住（rc.2 就栽在这里）。
 - 确认包里没有 `$PLUGINSDIR`（NSIS 解包残留，约 285 MB）。
+- 关闭所有 DeepSeek Harness 实例后跑一次 `pwsh scripts/smoke-test.ps1 -Zip <包>`，确认能启动并生成 `.dsh`。
+  有实例在跑时脚本会以退出码 2 提示环境冲突——Electron 的单实例机制会让第二份拷贝在加载 `app.asar`
+  之前就退出（退出码 0、不建任何目录），那不是包的问题，别误判。
 - 不提交 `dist/`、`.dsh/`、`home/`、`@deepseek-ai/`、`@deepseek-aidsh-desktop-updater/`（`.gitignore` 已覆盖）。
 - 发布后把线上包下载回来跑一次 `verify-release.ps1`，并核对其 SHA-256 与 Release 附件一致。
 
