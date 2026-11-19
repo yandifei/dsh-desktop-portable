@@ -12,3 +12,5 @@ build/
 home/
 @deepseek-ai/
 @deepseek-aidsh-desktop-updater/
+# 视频制作工作区（全部产物都在这里，不随仓库发布）
+video/
