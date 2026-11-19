@@ -58,19 +58,29 @@ jobs:
         run: |
           $tag = $env:GITHUB_REF -replace '^refs/tags/', ''
           $version = $tag -replace '^v', ''
-          $notes = (@(
-            "DeepSeek Harness ${version} 的 Windows x64 便携版。",
-            "",
-            "- 基于官方安装包构建，解包前已校验 Authenticode 签名。",
-            "- payload 已打便携补丁：所有可写路径留在 exe 同级目录。",
-            "- 下载后请比对附带的 .sha256。",
-            "- 非官方构建，与 DeepSeek 官方无关。",
-            "",
-            "使用方法见 README.md，变更见 CHANGELOG.md。"
-          ) -join "`n")
-          $arguments = @('release', 'create', $tag) + @(Get-ChildItem dist/*.zip, dist/*.sha256 | ForEach-Object { $_.FullName })
-          # Every build here is a release candidate, and GitHub treats "latest" and
-          # "pre-release" as mutually exclusive. Point "latest" at the newest build so
-          # /releases/latest and the Releases page always offer the current download.
-          $arguments += @('--title', $tag, '--notes', $notes, '--latest')
-          gh @arguments
+          $assets = @(Get-ChildItem dist/*.zip, dist/*.sha256 | ForEach-Object { $_.FullName })
+          # A release may already exist when the tag was created by hand or by a
+          # previous publish step. In that case replace the assets instead of failing.
+          gh release view $tag 2>$null | Out-Null
+          if ($LASTEXITCODE -eq 0) {
+            Write-Host "Release $tag already exists; uploading assets with --clobber."
+            gh release upload $tag @assets --clobber
+            gh release edit $tag --latest
+          } else {
+            $notes = (@(
+              "DeepSeek Harness ${version} 的 Windows x64 便携版。",
+              "",
+              "- 基于官方安装包构建，解包前已校验 Authenticode 签名。",
+              "- payload 已打便携补丁：所有可写路径留在 exe 同级目录。",
+              "- 下载后请比对附带的 .sha256。",
+              "- 非官方构建，与 DeepSeek 官方无关。",
+              "",
+              "使用方法见 README.md，变更见 CHANGELOG.md。"
+            ) -join "`n")
+            $arguments = @('release', 'create', $tag) + $assets
+            # Every build here is a release candidate, and GitHub treats "latest" and
+            # "pre-release" as mutually exclusive. Point "latest" at the newest build so
+            # /releases/latest and the Releases page always offer the current download.
+            $arguments += @('--title', $tag, '--notes', $notes, '--latest')
+            gh @arguments
+          }
