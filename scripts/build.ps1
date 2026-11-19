@@ -2,7 +2,7 @@
 #
 # Usage:
 #   pwsh scripts/build.ps1                 # latest version from the official nightly feed
-#   pwsh scripts/build.ps1 -Version 0.2.2-rc.1
+#   pwsh scripts/build.ps1 -Version 0.2.2-rc.5
 #
 # The script downloads the official installer, verifies SHA-512 and Authenticode,
 # extracts it without running it, applies the portable patches, and writes a zip

@@ -40,7 +40,7 @@ pwsh scripts/verify-release.ps1 -Zip dist\DSH-Desktop-Portable-<版本>-win-x64.
 ## 固定版本
 
 ```powershell
-pwsh scripts/build.ps1 -Version 0.2.2-rc.1
+pwsh scripts/build.ps1 -Version 0.2.2-rc.5
 ```
 
 固定版本时 feed 没有对应的校验和，只能校验 Authenticode 签名。优先使用默认的 feed 流程，它会同时校验两者。

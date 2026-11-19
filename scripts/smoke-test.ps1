@@ -1,7 +1,7 @@
 # 便携包启动自检：解压 → 启动 → 检查数据目录是否真的落在 exe 同级 → 退出。
 #
 # 用法：
-#   pwsh scripts/smoke-test.ps1 -Zip dist/DSH-Desktop-Portable-0.2.2-rc.2-win-x64.zip
+#   pwsh scripts/smoke-test.ps1 -Zip dist/DSH-Desktop-Portable-0.2.2-rc.5-win-x64.zip
 #
 # 注意：必须先完全退出 DeepSeek Harness（托盘 → Quit）。Electron 的单实例机制会让
 # 第二份拷贝在加载 app.asar 之前就直接退出（退出码 0，且不产生任何目录），
